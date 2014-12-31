@@ -8,6 +8,7 @@ PRip is entirely **open-source**, and everyone is free to propose changes or mai
 *   Import plots captured on typical image formats (jpg, png, etc).
 *   Define reference points for x and y axis.
 *   Digitize data using the free zoom view, which allow fast input and great precision.
+*   Drag data points to improve the fit.
 *   Export data as plain text.
 *   Store the digitizing project for latter review or improvement.
 
@@ -16,26 +17,32 @@ PRip is entirely **open-source**, and everyone is free to propose changes or mai
 *   Export gnuplot input to automatically recreate original plot digitaly.
 *   Additional reference points for more accurate results on baddly digitized plots.
 
-### Contributing
-If you want to help put with the ongoing development, you can do so by looking for possible bugs or by contributing new features. To become one of the developers, simply fork this repository and submit your pull requests for review.
-
-To report a bug, propose a feature, or suggest a change to the existing one — please, use our [Issue Tracker](https://github.com/esteldunedain/prip/issues).
-
 ### Running
 To run PRip you need to install the python interpreter and the PyQt bindings.
 
-It is currently tested on Python 2.7.2 and PyQt 4.8.6, but should run on other versions as well.
+It is currently tested on Python 2.7.2 and PyQt 4.8.6, but should run on other versions of Python 2.* and PyQt 4.* as well.
 
 #### On Windows
+- Download the source code
 - Install the latest version of python 2 from https://www.python.org/downloads/
 - Install the corresponding version of PyQt from http://www.riverbankcomputing.com/software/pyqt/download
 - Double click on the `PRip.py` file
 
 #### On Ubuntu/Mint/Debian
-If you have a distribution based on KDE you most likely already have whats needed. In any case:
+If you have a distribution based on KDE you most likely already have whats needed. In any case, this instructions should :
 
-- `sudo aptitude install python-qt4`
-- Double click on the `PRip.py` file
+- Download the source code
+- `sudo apt-get update && sudo apt-get install python-qt4`
+- On the source code, run `python PRip.py`
 
-## Author
+Or, if you want to automatically download and execute the latest code, installing dependencies if needed:
+
+- `sudo apt-get update && sudo apt-get install git python-qt4 && git clone https://github.com/esteldunedain/prip.git && cd prip && python PRip.py`
+
+### Contributing
+If you want to help put with the ongoing development, you can do so by looking for possible bugs or by contributing new features. To become one of the developers, simply fork this repository and submit your pull requests for review.
+
+To report a bug, propose a feature, or suggest a change to the existing one — please, use our [Issue Tracker](https://github.com/esteldunedain/prip/issues).
+
+### Author
 Written by Nicolás Diego Badano < nicolas.d.badano at gmail.com >
