@@ -63,7 +63,7 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
         d["points"] = points
 
         try:
-            oF = open(project_file, 'wb')
+            oF = open(project_file, "wb")
             pickle.dump("PripV0.1", oF)
             pickle.dump(d, oF)
             oF.close()
@@ -74,7 +74,7 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
     def load_project(self, project_file):
         self.reset()
 
-        with open(project_file, 'rb') as iF:
+        with open(project_file, "rb") as iF:
             header = pickle.load(iF)
             if header == "PripV0.1":
                 d = pickle.load(iF)
@@ -106,7 +106,7 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
 
     def add_image(self, background_file):
         pixmap = QtGui.QPixmap(background_file)
-        self._background_file = background_file
+        self._background_file = str(background_file)
         self._background = self.addPixmap(pixmap)
 
     def set_insert_mode(self, mode):
@@ -194,3 +194,21 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
         coord[1] = self.y0 + (self.y1 - self.y0) * beta
 
         return coord
+
+    def export_data_clipboard(self):
+        clipboard_text = ""
+        for p in self._points:
+            clipboard_text += "\t".join([str(x) for x in self.compute_coordinates(p.scenePos())])
+            clipboard_text += "\n"
+
+        cb = QtGui.QApplication.clipboard()
+        cb.clear(mode=cb.Clipboard)
+        cb.setText(clipboard_text)
+
+    def export_data_textfile(self, filename = None):
+        if filename is None:
+            filename = self._background_file + ".dat"
+        with open(filename, "w") as oF:
+            for p in self._points:
+                oF.write("\t".join([str(x) for x in self.compute_coordinates(p.scenePos())]))
+                oF.write("\n")

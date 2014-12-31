@@ -160,7 +160,8 @@
     <property name="title">
      <string>Export</string>
     </property>
-    <addaction name="actionExport_data"/>
+    <addaction name="actionExport_data_clipboard"/>
+    <addaction name="actionExport_data_textfile"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuExport"/>
@@ -191,9 +192,14 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionExport_data">
+  <action name="actionExport_data_textfile">
    <property name="text">
-    <string>Export data</string>
+    <string>Export data to text file</string>
+   </property>
+  </action>
+  <action name="actionExport_data_clipboard">
+   <property name="text">
+    <string>Export data to clipboard</string>
    </property>
   </action>
  </widget>

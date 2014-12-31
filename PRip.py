@@ -70,6 +70,12 @@ class Main_Window(QtGui.QMainWindow, form_class):
         self.connect(self.actionExit,
                         QtCore.SIGNAL("triggered()"),
                         self.exit)
+        self.connect(self.actionExport_data_clipboard,
+                        QtCore.SIGNAL("triggered()"),
+                        self._graphicsScene.export_data_clipboard)
+        self.connect(self.actionExport_data_textfile,
+                        QtCore.SIGNAL("triggered()"),
+                        self._graphicsScene.export_data_textfile)
 
         # Mouse move
         self._graphicsScene.mouse_moved.connect(self.update_mouse_pos_status_bar)
