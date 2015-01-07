@@ -11,6 +11,9 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
     class InsertMode:
         Normal, X0, X1, Y0, Y1 = range(5)
 
+    class Helpers:
+        LineX, LineY = range(2)
+
     # Signal emitted when the mouse is moved
     mouse_moved = QtCore.pyqtSignal(float, float)
 
@@ -25,6 +28,7 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
         self._background = None
 
         self._axis_refs = {}
+        self._axis_lines = {}
         self._points = []
         self._mode = PripGraphicsScene.InsertMode.Normal
 
@@ -134,6 +138,31 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
         item.setPos(pos);
         self._axis_refs[mode] = item
 
+        self.update_axis_lines()
+
+    def update_axis_lines(self):
+        if PripGraphicsScene.InsertMode.X0 in self._axis_refs and \
+           PripGraphicsScene.InsertMode.X1 in self._axis_refs:
+            line = QtCore.QLineF(self._axis_refs[PripGraphicsScene.InsertMode.X0].scenePos(),
+                                 self._axis_refs[PripGraphicsScene.InsertMode.X1].scenePos())
+            if not PripGraphicsScene.Helpers.LineX in self._axis_lines:
+                item = self.addLine(line)
+                item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+                self._axis_lines[PripGraphicsScene.Helpers.LineX] = item
+            else:
+                self._axis_lines[PripGraphicsScene.Helpers.LineX].setLine(line)
+
+        if PripGraphicsScene.InsertMode.Y0 in self._axis_refs and \
+           PripGraphicsScene.InsertMode.Y1 in self._axis_refs:
+            line = QtCore.QLineF(self._axis_refs[PripGraphicsScene.InsertMode.Y0].scenePos(),
+                                 self._axis_refs[PripGraphicsScene.InsertMode.Y1].scenePos())
+            if not PripGraphicsScene.Helpers.LineY in self._axis_lines:
+                item = self.addLine(line)
+                item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+                self._axis_lines[PripGraphicsScene.Helpers.LineY] = item
+            else:
+                self._axis_lines[PripGraphicsScene.Helpers.LineY].setLine(line)
+
     def mousePressEvent(self, event):
         mouse_pos = event.scenePos();
         item = self.itemAt(mouse_pos)
@@ -155,6 +184,8 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
 
     def mouseMoveEvent(self, event):
         QtGui.QGraphicsScene.mouseMoveEvent(self, event)
+
+        self.update_axis_lines()
 
         if not PripGraphicsScene.InsertMode.X0 in self._axis_refs:
             return
