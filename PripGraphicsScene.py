@@ -14,6 +14,16 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
     class Helpers:
         LineX, LineY = range(2)
 
+    class Preferences:
+        Pen_Axis_ref_X = QtGui.QPen(QtCore.Qt.red, 2, QtCore.Qt.SolidLine,
+                                    QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
+        Pen_Axis_ref_Y = QtGui.QPen(QtCore.Qt.blue, 2, QtCore.Qt.SolidLine,
+                                    QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
+        Pen_Axis_line_X = QtGui.QPen(QtCore.Qt.red, 1, QtCore.Qt.SolidLine,
+                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
+        Pen_Axis_line_Y = QtGui.QPen(QtCore.Qt.blue, 1, QtCore.Qt.SolidLine,
+                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
+
     # Signal emitted when the mouse is moved
     mouse_moved = QtCore.pyqtSignal(float, float)
 
@@ -133,7 +143,12 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
             if not self._axis_refs[mode] is None:
                 self.removeItem(self._axis_refs[mode])
 
-        item = self.addEllipse(-5.0, -5.0, 10.0, 10.0)
+        pen = PripGraphicsScene.Preferences.Pen_Axis_ref_X
+        if mode == PripGraphicsScene.InsertMode.Y0 or \
+           mode == PripGraphicsScene.InsertMode.Y1:
+            pen = PripGraphicsScene.Preferences.Pen_Axis_ref_Y
+
+        item = self.addEllipse(-5.0, -5.0, 10.0, 10.0, pen)
         item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
         item.setPos(pos);
         self._axis_refs[mode] = item
@@ -146,7 +161,8 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
             line = QtCore.QLineF(self._axis_refs[PripGraphicsScene.InsertMode.X0].scenePos(),
                                  self._axis_refs[PripGraphicsScene.InsertMode.X1].scenePos())
             if not PripGraphicsScene.Helpers.LineX in self._axis_lines:
-                item = self.addLine(line)
+                pen = PripGraphicsScene.Preferences.Pen_Axis_line_X
+                item = self.addLine(line, pen)
                 item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
                 self._axis_lines[PripGraphicsScene.Helpers.LineX] = item
             else:
@@ -157,7 +173,8 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
             line = QtCore.QLineF(self._axis_refs[PripGraphicsScene.InsertMode.Y0].scenePos(),
                                  self._axis_refs[PripGraphicsScene.InsertMode.Y1].scenePos())
             if not PripGraphicsScene.Helpers.LineY in self._axis_lines:
-                item = self.addLine(line)
+                pen = PripGraphicsScene.Preferences.Pen_Axis_line_Y
+                item = self.addLine(line, pen)
                 item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
                 self._axis_lines[PripGraphicsScene.Helpers.LineY] = item
             else:
