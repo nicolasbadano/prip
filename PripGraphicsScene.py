@@ -23,7 +23,8 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
                                      QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
         Pen_Axis_line_Y = QtGui.QPen(QtCore.Qt.blue, 1, QtCore.Qt.SolidLine,
                                      QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
-
+        Pen_Point = QtGui.QPen(QtCore.Qt.green, 2, QtCore.Qt.SolidLine,
+                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
     # Signal emitted when the mouse is moved
     mouse_moved = QtCore.pyqtSignal(float, float)
 
@@ -127,7 +128,8 @@ class PripGraphicsScene(QtGui.QGraphicsScene):
         self._mode = mode
 
     def add_point(self, pos):
-        item = self.addRect(-5.0, -5.0, 10.0, 10.0)
+        pen = PripGraphicsScene.Preferences.Pen_Point
+        item = self.addRect(-5.0, -5.0, 10.0, 10.0, pen)
         item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
         item.setPos(pos);
 
