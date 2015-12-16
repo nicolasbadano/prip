@@ -11,7 +11,6 @@ from functools import partial
 from PripModel import PripModel
 from PripView import PripView
 from PripGraphicsScene import PripGraphicsScene
-from PripDataset import PripDataset
 from PripInsertMode import PripInsertMode
 from PripGraphicsRectItem import PripGraphicsRectItem
 
@@ -59,12 +58,6 @@ class Main_Window(QtGui.QMainWindow, form_class):
                      QtCore.SIGNAL("clicked()"),
                      partial(self.model.set_insert_mode,
                              PripInsertMode.Y1))
-        self.connect(self.pushButtonDatasetAdd,
-                     QtCore.SIGNAL("clicked()"),
-                     self.pushButtonDatasetAdd_clicked)
-        self.connect(self.pushButtonDatasetRemove,
-                     QtCore.SIGNAL("clicked()"),
-                     self.pushButtonDatasetRemove_clicked)
 
         # Actions
         self.connect(self.actionNew,
@@ -88,16 +81,6 @@ class Main_Window(QtGui.QMainWindow, form_class):
         self.connect(self.actionExport_data_textfile,
                         QtCore.SIGNAL("triggered()"),
                         self.model.export_data_textfile)
-
-#        self.connect(self.listDatasets,
-#                        QtCore.SIGNAL("itemActivated(QListWidgetItem *)"),
-#                        self.model.select_dataset)
-#       self.connect(self.listDatasets,
-#                        QtCore.SIGNAL("itemClicked(QListWidgetItem *)"),
-#                        self.model.select_dataset)
-        self.connect(self.listDatasets,
-                        QtCore.SIGNAL("itemSelectionChanged()"),
-                        self.selected_dataset_changed)
 
         # Mouse move
         self._graphicsScene.mouse_moved.connect(self.update_mouse_pos_status_bar)
@@ -172,27 +155,6 @@ class Main_Window(QtGui.QMainWindow, form_class):
         self.lineEditX1.setText(str(self.model.x1))
         self.lineEditY0.setText(str(self.model.y0))
         self.lineEditY1.setText(str(self.model.y1))
-
-    def pushButtonDatasetAdd_clicked(self):
-        name = self._graphicsScene.get_new_dataset_name()
-        item = PripDataset(name);
-        self.listDatasets.addItem(item);
-
-        self.listDatasets.setCurrentItem(item)
-
-    def pushButtonDatasetRemove_clicked(self):
-        row = self.listDatasets.currentRow()
-        item = self.listDatasets.takeItem(row);
-        del item
-
-        # self.listDatasets.setCurrentItem(item)
-        # button = QtGui.QPushButton("hey");
-        # item.setSizeHint(button.minimumSizeHint());
-        # self.listDatasets.setItemWidget(item, button);
-        # self.listDatasets.addItem("bar");
-
-    def selected_dataset_changed(self):
-        self._graphicsScene.selected_dataset_changed(self.listDatasets.currentItem())
 
     def viewMousePressEvent(self, event, item):
         mouse_pos = event.scenePos();
