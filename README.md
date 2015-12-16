@@ -29,7 +29,7 @@ It is currently tested on Python 2.7.2 and PyQt 4.8.6, but should run on other v
 - Double click on the `PRip.py` file
 
 #### On Ubuntu/Mint/Debian
-If you have a distribution based on KDE you most likely already have whats needed. In any case, this instructions should :
+If you have a distribution based on KDE you most likely already have what's needed. In any case, this instructions should :
 
 - Download the source code
 - `sudo apt-get update && sudo apt-get install python-qt4`

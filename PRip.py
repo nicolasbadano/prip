@@ -8,8 +8,12 @@ import os
 from PyQt4 import QtCore, QtGui, uic
 from functools import partial
 
+from PripModel import PripModel
+from PripView import PripView
 from PripGraphicsScene import PripGraphicsScene
-
+from PripDataset import PripDataset
+from PripInsertMode import PripInsertMode
+from PripGraphicsRectItem import PripGraphicsRectItem
 
 # Load the UI
 path = ""
@@ -20,6 +24,8 @@ class Main_Window(QtGui.QMainWindow, form_class):
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.setupUi(self)
+        self.file_name = None
+        self.model = PripModel()
 
         self._graphicsScene = PripGraphicsScene(self)
         self.graphicsView.setScene(self._graphicsScene)
@@ -39,20 +45,26 @@ class Main_Window(QtGui.QMainWindow, form_class):
         # Button events
         self.connect(self.pushButtonPlaceX0,
                      QtCore.SIGNAL("clicked()"),
-                     partial(self._graphicsScene.set_insert_mode,
-                             PripGraphicsScene.InsertMode.X0))
+                     partial(self.model.set_insert_mode,
+                             PripInsertMode.X0))
         self.connect(self.pushButtonPlaceX1,
                      QtCore.SIGNAL("clicked()"),
-                     partial(self._graphicsScene.set_insert_mode,
-                             PripGraphicsScene.InsertMode.X1))
+                     partial(self.model.set_insert_mode,
+                             PripInsertMode.X1))
         self.connect(self.pushButtonPlaceY0,
                      QtCore.SIGNAL("clicked()"),
-                     partial(self._graphicsScene.set_insert_mode,
-                             PripGraphicsScene.InsertMode.Y0))
+                     partial(self.model.set_insert_mode,
+                             PripInsertMode.Y0))
         self.connect(self.pushButtonPlaceY1,
                      QtCore.SIGNAL("clicked()"),
-                     partial(self._graphicsScene.set_insert_mode,
-                             PripGraphicsScene.InsertMode.Y1))
+                     partial(self.model.set_insert_mode,
+                             PripInsertMode.Y1))
+        self.connect(self.pushButtonDatasetAdd,
+                     QtCore.SIGNAL("clicked()"),
+                     self.pushButtonDatasetAdd_clicked)
+        self.connect(self.pushButtonDatasetRemove,
+                     QtCore.SIGNAL("clicked()"),
+                     self.pushButtonDatasetRemove_clicked)
 
         # Actions
         self.connect(self.actionNew,
@@ -72,17 +84,31 @@ class Main_Window(QtGui.QMainWindow, form_class):
                         self.exit)
         self.connect(self.actionExport_data_clipboard,
                         QtCore.SIGNAL("triggered()"),
-                        self._graphicsScene.export_data_clipboard)
+                        self.model.export_data_clipboard)
         self.connect(self.actionExport_data_textfile,
                         QtCore.SIGNAL("triggered()"),
-                        self._graphicsScene.export_data_textfile)
+                        self.model.export_data_textfile)
+
+#        self.connect(self.listDatasets,
+#                        QtCore.SIGNAL("itemActivated(QListWidgetItem *)"),
+#                        self.model.select_dataset)
+#       self.connect(self.listDatasets,
+#                        QtCore.SIGNAL("itemClicked(QListWidgetItem *)"),
+#                        self.model.select_dataset)
+        self.connect(self.listDatasets,
+                        QtCore.SIGNAL("itemSelectionChanged()"),
+                        self.selected_dataset_changed)
 
         # Mouse move
         self._graphicsScene.mouse_moved.connect(self.update_mouse_pos_status_bar)
+        self._graphicsScene.mouse_pressed.connect(self.viewMousePressEvent)
+        self._graphicsScene.point_item_moved.connect(self.point_item_moved)
+        self._graphicsScene.axis_item_moved.connect(self.axis_item_moved)
 
     @QtCore.pyqtSlot(float, float)
     def update_mouse_pos_status_bar(self, x, y):
-        self.statusBar().showMessage("x=%f, y=%f" % (x,y))
+        coord = self.model.compute_coordinates([x,y])
+        self.statusBar().showMessage("x=%f, y=%f" % tuple(coord))
 
     def new_project(self):
         filename = QtGui.QFileDialog.getOpenFileName(self,
@@ -90,7 +116,8 @@ class Main_Window(QtGui.QMainWindow, form_class):
             "Image Files (*.png *.jpg *.jpeg *.bmp *.tif)")
         if filename is not None and not str(filename) == "":
             # Clean previous state
-            self._graphicsScene.new_project(filename)
+            self.model.new_project(filename)
+            self.view = PripView(self.model, self._graphicsScene)
             self.file_name = None
             self.update_interface()
 
@@ -100,15 +127,16 @@ class Main_Window(QtGui.QMainWindow, form_class):
             "PRip project (*.prip)")
         if filename is not None and not str(filename) == "":
             # Try to load project
-            if self._graphicsScene.load_project(filename):
-                self.file_name = filename
-                self.update_interface()
+            self.model.load_project(filename)
+            self.view = PripView(self.model, self._graphicsScene)
+            self.file_name = filename
+            self.update_interface()
 
     def save_project(self):
         if self.file_name is None:
             self.save_project_as()
         else:
-            self._graphicsScene.save_project(self.file_name)
+            self.model.save_project(self.file_name)
 
     def save_project_as(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
@@ -123,16 +151,16 @@ class Main_Window(QtGui.QMainWindow, form_class):
 
     def read_axis_references(self):
         try:
-            self._graphicsScene.x0 = float(self.lineEditX0.text())
+            self.model.x0 = float(self.lineEditX0.text())
         except: pass
         try:
-            self._graphicsScene.x1 = float(self.lineEditX1.text())
+            self.model.x1 = float(self.lineEditX1.text())
         except: pass
         try:
-            self._graphicsScene.y0 = float(self.lineEditY0.text())
+            self.model.y0 = float(self.lineEditY0.text())
         except: pass
         try:
-            self._graphicsScene.y1 = float(self.lineEditY1.text())
+            self.model.y1 = float(self.lineEditY1.text())
         except: pass
 
     def update_interface(self):
@@ -140,10 +168,54 @@ class Main_Window(QtGui.QMainWindow, form_class):
         self.update_axis_references()
 
     def update_axis_references(self):
-        self.lineEditX0.setText(str(self._graphicsScene.x0))
-        self.lineEditX1.setText(str(self._graphicsScene.x1))
-        self.lineEditY0.setText(str(self._graphicsScene.y0))
-        self.lineEditY1.setText(str(self._graphicsScene.y1))
+        self.lineEditX0.setText(str(self.model.x0))
+        self.lineEditX1.setText(str(self.model.x1))
+        self.lineEditY0.setText(str(self.model.y0))
+        self.lineEditY1.setText(str(self.model.y1))
+
+    def pushButtonDatasetAdd_clicked(self):
+        name = self._graphicsScene.get_new_dataset_name()
+        item = PripDataset(name);
+        self.listDatasets.addItem(item);
+
+        self.listDatasets.setCurrentItem(item)
+
+    def pushButtonDatasetRemove_clicked(self):
+        row = self.listDatasets.currentRow()
+        item = self.listDatasets.takeItem(row);
+        del item
+
+        # self.listDatasets.setCurrentItem(item)
+        # button = QtGui.QPushButton("hey");
+        # item.setSizeHint(button.minimumSizeHint());
+        # self.listDatasets.setItemWidget(item, button);
+        # self.listDatasets.addItem("bar");
+
+    def selected_dataset_changed(self):
+        self._graphicsScene.selected_dataset_changed(self.listDatasets.currentItem())
+
+    def viewMousePressEvent(self, event, item):
+        mouse_pos = event.scenePos();
+        mouse_pos = [mouse_pos.x(), mouse_pos.y()]
+        mode = self.model.get_insert_mode()
+        if event.button() == QtCore.Qt.LeftButton:
+            if (item is None) or (item == self.view._background):
+                if mode == PripInsertMode.Normal:
+                    self.model.add_point(mouse_pos)
+                else:
+                    self.model.add_axis_ref(mouse_pos, mode)
+                    self.model.set_insert_mode(PripInsertMode.Normal)
+        elif event.button() == QtCore.Qt.RightButton:
+            if (not item is None) and (item != self.view._background):
+                if isinstance(item, PripGraphicsRectItem):
+                    key = item.get_item_key()
+                    self.model.remove_point(key)
+
+    def point_item_moved(self, key, pos):
+        self.model.move_point(key, [pos.x(), pos.y()])
+
+    def axis_item_moved(self, key, pos):
+        self.model.move_axis_ref(key, [pos.x(), pos.y()])
 
 
 if __name__ == '__main__':
