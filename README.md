@@ -15,10 +15,13 @@ PRip is entirely **open-source**, and everyone is free to propose changes or mai
 ### Planned Features
 *   Digitize multiple datasets per plot and manage them.
 *   Export gnuplot input to automatically recreate original plot digitaly.
-*   Additional reference points for more accurate results on baddly digitized plots.
+*   Additional reference points for more accurate results on distorted plots.
 
-### Running
-To run PRip you need to install the python interpreter and the PyQt bindings.
+### Running from binaries
+A packaged version of PRip is available for Windows, generated with [PyInstaller](http://www.pyinstaller.org/). Simply unpack the `.exe` and `.ui` files to a folder and double-click. Check the [releases page](https://github.com/esteldunedain/prip/releases) on GitHub for the download links.
+
+### Running from source
+PRip can also be run from source. In that case ou need to install the python interpreter and the PyQt bindings.
 
 It is currently tested on Python 2.7.2 and PyQt 4.8.6, but should run on other versions of Python 2.* and PyQt 4.* as well.
 
