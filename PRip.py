@@ -14,6 +14,9 @@ from PripGraphicsScene import PripGraphicsScene
 from PripInsertMode import PripInsertMode
 from PripGraphicsRectItem import PripGraphicsRectItem
 
+import PripGraphicsView
+
+
 # Load the UI
 path = ""
 form_class = uic.loadUiType(path + "PRip.ui")[0]
