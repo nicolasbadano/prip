@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui, uic
 class PripGraphicsRectItem(QtGui.QGraphicsRectItem):
 
     def __init__(self, pen, key, parent=None):
-        QtGui.QGraphicsRectItem.__init__(self, -5.0, -5.0, 10.0, 10.0, parent)
+        QtGui.QGraphicsRectItem.__init__(self, -4.0, -4.0, 8.0, 8.0, parent)
         self.setPen(pen)
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
         self._key = key
