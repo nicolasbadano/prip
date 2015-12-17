@@ -139,7 +139,6 @@ class PripModel(QtCore.QObject):
                     elif isinstance(data, QtCore.QPointF):
                         p = [data.x(), data.y()]
                     else:
-                        print data
                         continue
                     self._current_dataset = dataset
                     self.add_point(p)
@@ -242,7 +241,6 @@ class PripModel(QtCore.QObject):
                 oF.write("\n")
 
     def add_dataset(self, name = None):
-        print "add_dataset"
         if name is None:
             name = "Dataset %i" % self._dataset_key
 
@@ -251,10 +249,8 @@ class PripModel(QtCore.QObject):
         self._current_dataset = key
         self._dataset_key += 1
         self.model_changed.emit()
-        print self._current_dataset
 
     def remove_dataset(self, key):
-        print "remove_dataset"
         del self._datasets[key]
 
         # Delete dangling points
@@ -272,13 +268,10 @@ class PripModel(QtCore.QObject):
             # If the last dataset was removed, add a new one instead
             self.add_dataset()
 
-        print self._current_dataset
         self.model_changed.emit()
 
     def change_current_dataset(self, key):
-        print "change_current_dataset"
         self._current_dataset = key
-        print self._current_dataset
 
     def get_datasets(self):
         return self._datasets
