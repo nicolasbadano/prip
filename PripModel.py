@@ -245,11 +245,29 @@ class PripModel(QtCore.QObject):
 
         return coord
 
-    def export_data_clipboard(self):
-        clipboard_text = ""
+    def get_points_per_dataset(self):
+        points_per_dataset = OrderedDict()
+        for dataset in self._datasets:
+            points_per_dataset[dataset] = []
+
         for key in self._points:
             p, dataset = self._points[key]
-            clipboard_text += "\t".join([str(x) for x in self.compute_coordinates(p)])
+            points_per_dataset[dataset].append(p)
+
+        count = max(len(points_per_dataset[dataset]) for dataset in self._datasets)
+        return points_per_dataset, count
+
+    def export_data_clipboard(self):
+        points_per_dataset, count = self.get_points_per_dataset()
+
+        clipboard_text = ""
+        for i in range(count):
+            for dataset in self._datasets:
+                if i < len(points_per_dataset[dataset]):
+                    p = points_per_dataset[dataset][i]
+                    clipboard_text += ("%f\t%f\t" % tuple(self.compute_coordinates(p)))
+                else:
+                    clipboard_text += "\t\t"
             clipboard_text += "\n"
 
         cb = QtGui.QApplication.clipboard()
@@ -257,12 +275,19 @@ class PripModel(QtCore.QObject):
         cb.setText(clipboard_text)
 
     def export_data_textfile(self, filename = None):
+        points_per_dataset, count = self.get_points_per_dataset()
+
         if filename is None:
             filename = self._background_file + ".dat"
+
         with open(filename, "w") as oF:
-            for key in self._points:
-                p, dataset = self._points[key]
-                oF.write("\t".join([str(x) for x in self.compute_coordinates(p)]))
+            for i in range(count):
+                for dataset in self._datasets:
+                    if i < len(points_per_dataset[dataset]):
+                        p = points_per_dataset[dataset][i]
+                        oF.write("%f, %f, " % tuple(self.compute_coordinates(p)))
+                    else:
+                        oF.write(", , ")
                 oF.write("\n")
 
     def add_dataset(self, name = None):
