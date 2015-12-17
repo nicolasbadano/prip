@@ -33,7 +33,6 @@ class Main_Window(QtGui.QMainWindow, form_class):
 
         self._graphicsScene = PripGraphicsScene(self)
         self.graphicsView.setScene(self._graphicsScene)
-        #self.graphicsView.setDragMode(QtGui.QGraphicsView.RubberBandDrag)
 
         # Line edit events
         for lineEdit in [self.lineEditX0, self.lineEditX1,
@@ -93,12 +92,6 @@ class Main_Window(QtGui.QMainWindow, form_class):
                         QtCore.SIGNAL("triggered()"),
                         self.model.export_data_textfile)
 
-#        self.connect(self.listDatasets,
-#                        QtCore.SIGNAL("itemActivated(QListWidgetItem *)"),
-#                        self.model.select_dataset)
-#       self.connect(self.listDatasets,
-#                        QtCore.SIGNAL("itemClicked(QListWidgetItem *)"),
-#                        self.model.select_dataset)
         self.connect(self.listDatasets,
                         QtCore.SIGNAL("itemSelectionChanged()"),
                         self.selected_dataset_changed)
