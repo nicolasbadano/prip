@@ -169,6 +169,8 @@ class Main_Window(QtGui.QMainWindow, form_class):
 
     def update_interface(self):
         self.graphicsView.setEnabled(True)
+        self.axesGroupPanel.setEnabled(True)
+        self.datasetsGroupPanel.setEnabled(True)
         self.update_axis_references()
 
     def update_axis_references(self):
