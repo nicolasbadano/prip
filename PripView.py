@@ -144,8 +144,8 @@ class PripView:
         item.setPos(pos);
 
     def remove_axis_ref(self, mode):
-        self._graphicScene.removeItem(self._axis_ref_items)
-        del self._graphicScene._axis_ref_items[mode]
+        self._graphicScene.removeItem(self._axis_ref_items[mode])
+        del self._axis_ref_items[mode]
 
     def update_axis_lines(self):
         if PripInsertMode.X0 in self._axis_ref_items and \
