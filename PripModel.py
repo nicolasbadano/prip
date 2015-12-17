@@ -6,6 +6,7 @@ from PripInsertMode import PripInsertMode
 from collections import OrderedDict
 from vector import *
 import pickle
+from os import path
 
 class PripModel(QtCore.QObject):
 
@@ -73,7 +74,9 @@ class PripModel(QtCore.QObject):
     def save_project(self, project_file):
         # Construct dict to dump
         d = {}
-        d["background_file"] = str(self._background_file)
+        dir_name = path.dirname(str(project_file))
+        rel_path = path.relpath(str(self._background_file), str(dir_name))
+        d["background_file"] = str(rel_path)
         d["x0"] = self.x0
         d["x1"] = self.x1
         d["y0"] = self.y0
@@ -95,9 +98,16 @@ class PripModel(QtCore.QObject):
             points.append([p, dataset])
         d["points"] = points
 
+        datasets = self._datasets
+        dataset_key = self._dataset_key
+        current_dataset = self._current_dataset
+        d["datasets"] = datasets
+        d["dataset_key"] = dataset_key
+        d["current_dataset"] = current_dataset
+
         try:
             oF = open(project_file, "wb")
-            pickle.dump("PripV0.2", oF)
+            pickle.dump("PripV0.3", oF)
             pickle.dump(d, oF)
             oF.close()
             return True
@@ -109,7 +119,7 @@ class PripModel(QtCore.QObject):
 
         with open(project_file, "rb") as iF:
             header = pickle.load(iF)
-            if header == "PripV0.1" or header == "PripV0.2":
+            if header == "PripV0.1" or header == "PripV0.2" or header == "PripV0.3":
                 d = pickle.load(iF)
 
                 def assignIfExists(var, d, keyname):
@@ -119,6 +129,11 @@ class PripModel(QtCore.QObject):
                         return var
 
                 background_file = d["background_file"]
+                if header == "PripV0.3":
+                    dir_name = path.dirname(str(project_file))
+                    background_file = path.normpath(path.join(dir_name, background_file))
+                print background_file
+
                 self.add_image(background_file)
                 self.x0 = assignIfExists(self.x0, d, "x0")
                 self.x1 = assignIfExists(self.x1, d, "x1")
@@ -132,6 +147,15 @@ class PripModel(QtCore.QObject):
                             p = [p.x(), p.y()]
                         self.add_axis_ref(p, key)
 
+                if "datasets" in d:
+                    self._datasets = d["datasets"]
+                    self._dataset_key = d["dataset_key"]
+                    self._current_dataset = d["current_dataset"]
+                else:
+                    self._datasets = OrderedDict({0: "Dataset 0"})
+                    self._dataset_key = 1
+                    self._current_dataset = 0
+
                 for data in d["points"]:
                     p, dataset = [0,0], 0
                     if isinstance(data, list) or isinstance(data, tuple):
@@ -140,7 +164,8 @@ class PripModel(QtCore.QObject):
                         p = [data.x(), data.y()]
                     else:
                         continue
-                    self._current_dataset = dataset
+                    if dataset in self._datasets:
+                        self._current_dataset = dataset
                     self.add_point(p)
 
                 self.model_changed.emit()
