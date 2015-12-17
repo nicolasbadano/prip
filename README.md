@@ -11,14 +11,17 @@ PRip is entirely **open-source**, and everyone is free to propose changes or mai
 *   Drag data points to improve the fit.
 *   Export data as plain text.
 *   Store the digitizing project for latter review or improvement.
+*   Digitize multiple datasets per plot
 
 ### Planned Features
-*   Digitize multiple datasets per plot and manage them.
+*   Manage the style of the datasets.
 *   Export gnuplot input to automatically recreate original plot digitaly.
 *   Additional reference points for more accurate results on distorted plots.
 
 ### Running from binaries
-A packaged version of PRip is available for Windows, generated with [PyInstaller](http://www.pyinstaller.org/). Simply unpack the `.exe` and `.ui` files to a folder and double-click. Check the [releases page](https://github.com/esteldunedain/prip/releases) on GitHub for the download links.
+Packaged versions of PRip are available for both Windows and Linux, generated with [PyInstaller](http://www.pyinstaller.org/). Simply unpack the executable and `.ui` files to a folder and double-click. No dependencies should be required.
+
+Check the [releases page](https://github.com/esteldunedain/prip/releases) on GitHub for the download links.
 
 ### Running from source
 PRip can also be run from source. In that case ou need to install the python interpreter and the PyQt bindings.
@@ -49,3 +52,16 @@ To report a bug, propose a feature, or suggest a change to the existing one — 
 
 ### Author
 Written by Nicolás Diego Badano < nicolas.d.badano at gmail.com >
+
+### Changelog
+
+#### v0.3
+- Added the possibility of digitizing multiple datasets per plot.
+- Path to the source image is now stored as relative to the project file.
+- Slightly reduced the size of markers
+
+#### v0.2
+- Code structure refactored to a MVC pattern.
+
+#### v0.1
+- First released version.
