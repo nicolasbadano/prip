@@ -20,16 +20,23 @@ class PripView:
         Pen_Axis_ref_Y = QtGui.QPen(QtCore.Qt.blue, 2, QtCore.Qt.SolidLine,
                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
         Pen_Axis_line_X = QtGui.QPen(QtCore.Qt.red, 1.2, QtCore.Qt.SolidLine,
-                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
+                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin)
         Pen_Axis_line_Y = QtGui.QPen(QtCore.Qt.blue, 1.2, QtCore.Qt.SolidLine,
-                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
-        Pen_Point = [QtGui.QPen(QtCore.Qt.green, 2, QtCore.Qt.SolidLine,
-                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin),
-                     QtGui.QPen(QtCore.Qt.red, 2, QtCore.Qt.SolidLine,
-                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin),
-                     QtGui.QPen(QtCore.Qt.blue, 2, QtCore.Qt.SolidLine,
-                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin)]
+                                     QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin)
 
+        Pen_Colors = [(255, 51,153),
+                      (255,153, 51),
+                      (255,255, 51),
+                      (153,255, 51),
+                      ( 51,255, 51),
+                     #( 51,255,153),
+                      ( 51,153,255),
+                      ( 51, 51,255),
+                      (153, 51,255)]
+
+        Pen_Point = [QtGui.QPen(QtGui.QColor(r,g,b), 2, QtCore.Qt.SolidLine,
+                                QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin)
+                                for r,g,b in Pen_Colors]
 
     def __init__(self, model, graphicScene, listDatasets):
         self._model = model
