@@ -1,6 +1,6 @@
-**PRip** is a tool for digitizing scientific plots and graphs, getting numeric data. It works in a similar way to the popular g3data, but has a greater enphasis on usability and portability.
+**PRip** is a tool for digitizing scientific plots and graphs, getting numeric data. It works similarly to the popular g3data application, but has a greater enphasis on usability, precision and portability.
 
-PRip is written in Python, and used the Qt toolkit through the PyQt bindings. This language and toolkit selection makes it hopefully very portable.
+PRip is written in Python, and used the Qt toolkit through the PyQt bindings. This language and toolkit selection hopefully makes it very portable.
 
 PRip is entirely **open-source**, and everyone is free to propose changes or maintain their own, customized version as long as they make their changes open to the public in accordance with the GNU General Public License (for more information check the license file attached to this project).
 

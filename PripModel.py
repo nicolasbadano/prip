@@ -50,9 +50,11 @@ class PripModel(QtCore.QObject):
 
         self._axis_refs = {}
         self._axis_lines = {}
+
         self._points = OrderedDict()
 
-        self._datasets = []
+        self._datasets = OrderedDict()
+        self._dataset_key = 0
         self._current_dataset = None
 
         self._mode = PripInsertMode.Normal
@@ -66,6 +68,7 @@ class PripModel(QtCore.QObject):
         self.reset()
         if not background_file is None:
             self.add_image(background_file)
+        self.add_dataset()
 
     def save_project(self, project_file):
         # Construct dict to dump
@@ -238,16 +241,47 @@ class PripModel(QtCore.QObject):
                 oF.write("\t".join([str(x) for x in self.compute_coordinates(p)]))
                 oF.write("\n")
 
-    def get_new_dataset_name(self):
-        return "Dataset" + len(self._datasets)
+    def add_dataset(self, name = None):
+        print "add_dataset"
+        if name is None:
+            name = "Dataset %i" % self._dataset_key
 
-    def selected_dataset_changed(self, selected_dataset):
-        self._current_dataset = selected_dataset._name
+        key = self._dataset_key
+        self._datasets[key] = name
+        self._current_dataset = key
+        self._dataset_key += 1
+        self.model_changed.emit()
+        print self._current_dataset
 
-    def dataset_removed(self, dataset):
-        name = selected_dataset._name
+    def remove_dataset(self, key):
+        print "remove_dataset"
+        del self._datasets[key]
 
-        for key in self._points:
-            p, dataset = self._points[key]
-            if dataset == name:
-                pass
+        # Delete dangling points
+        for pkey in self._points.keys():
+            if self._points[pkey][1] == key:
+                del self._points[pkey]
+
+        if self._current_dataset == key:
+            if len(self._datasets.keys()) == 0:
+                # If the last dataset was removed, add a new one instead
+                self.add_dataset()
+            self._current_dataset = self._datasets.keys()[-1]
+
+        if len(self._datasets.keys()) == 0:
+            # If the last dataset was removed, add a new one instead
+            self.add_dataset()
+
+        print self._current_dataset
+        self.model_changed.emit()
+
+    def change_current_dataset(self, key):
+        print "change_current_dataset"
+        self._current_dataset = key
+        print self._current_dataset
+
+    def get_datasets(self):
+        return self._datasets
+
+    def get_current_dataset(self):
+        return self._current_dataset

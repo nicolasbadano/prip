@@ -11,7 +11,6 @@ from functools import partial
 from PripModel import PripModel
 from PripView import PripView
 from PripGraphicsScene import PripGraphicsScene
-from PripDataset import PripDataset
 from PripInsertMode import PripInsertMode
 from PripGraphicsRectItem import PripGraphicsRectItem
 
@@ -29,6 +28,8 @@ class Main_Window(QtGui.QMainWindow, form_class):
         self.setupUi(self)
         self.file_name = None
         self.model = PripModel()
+
+        self.model.model_changed.connect(self.update_interface)
 
         self._graphicsScene = PripGraphicsScene(self)
         self.graphicsView.setScene(self._graphicsScene)
@@ -120,7 +121,7 @@ class Main_Window(QtGui.QMainWindow, form_class):
         if filename is not None and not str(filename) == "":
             # Clean previous state
             self.model.new_project(filename)
-            self.view = PripView(self.model, self._graphicsScene)
+            self.view = PripView(self.model, self._graphicsScene, self.listDatasets)
             self.file_name = None
             self.update_interface()
 
@@ -131,7 +132,7 @@ class Main_Window(QtGui.QMainWindow, form_class):
         if filename is not None and not str(filename) == "":
             # Try to load project
             self.model.load_project(filename)
-            self.view = PripView(self.model, self._graphicsScene)
+            self.view = PripView(self.model, self._graphicsScene, self.listDatasets)
             self.file_name = filename
             self.update_interface()
 
@@ -177,16 +178,12 @@ class Main_Window(QtGui.QMainWindow, form_class):
         self.lineEditY1.setText(str(self.model.y1))
 
     def pushButtonDatasetAdd_clicked(self):
-        name = self._graphicsScene.get_new_dataset_name()
-        item = PripDataset(name);
-        self.listDatasets.addItem(item);
-
-        self.listDatasets.setCurrentItem(item)
+        self.model.add_dataset()
 
     def pushButtonDatasetRemove_clicked(self):
         row = self.listDatasets.currentRow()
         item = self.listDatasets.takeItem(row);
-        del item
+        self.model.remove_dataset(item._key)
 
         # self.listDatasets.setCurrentItem(item)
         # button = QtGui.QPushButton("hey");
@@ -195,7 +192,10 @@ class Main_Window(QtGui.QMainWindow, form_class):
         # self.listDatasets.addItem("bar");
 
     def selected_dataset_changed(self):
-        self._graphicsScene.selected_dataset_changed(self.listDatasets.currentItem())
+        if not self.listDatasets.currentItem() is None:
+            self.model.change_current_dataset(self.listDatasets.currentItem()._key)
+        else:
+            self.model.change_current_dataset(None)
 
     def viewMousePressEvent(self, event, item):
         mouse_pos = event.scenePos();

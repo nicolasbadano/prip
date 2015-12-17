@@ -4,6 +4,7 @@ from PyQt4 import QtCore, QtGui, uic
 from PripInsertMode import PripInsertMode
 from PripGraphicsRectItem import PripGraphicsRectItem
 from PripGraphicsAxisItem import PripGraphicsAxisItem
+from PripDatasetItem import PripDatasetItem
 
 from vector import *
 import pickle
@@ -22,12 +23,18 @@ class PripView:
                                      QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
         Pen_Axis_line_Y = QtGui.QPen(QtCore.Qt.blue, 1.2, QtCore.Qt.SolidLine,
                                      QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
-        Pen_Point = QtGui.QPen(QtCore.Qt.green, 2, QtCore.Qt.SolidLine,
-                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin);
+        Pen_Point = [QtGui.QPen(QtCore.Qt.green, 2, QtCore.Qt.SolidLine,
+                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin),
+                     QtGui.QPen(QtCore.Qt.red, 2, QtCore.Qt.SolidLine,
+                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin),
+                     QtGui.QPen(QtCore.Qt.blue, 2, QtCore.Qt.SolidLine,
+                               QtCore.Qt.SquareCap, QtCore.Qt.BevelJoin)]
 
-    def __init__(self, model, graphicScene):
+
+    def __init__(self, model, graphicScene, listDatasets):
         self._model = model
         self._graphicScene = graphicScene
+        self._listDatasets = listDatasets
 
         self.reset()
         self._model.model_changed.connect(self.model_changed)
@@ -35,6 +42,7 @@ class PripView:
 
     def reset(self):
         self._graphicScene.clear()
+        self._listDatasets.clear()
 
         background_file = self._model.get_background_file()
         pixmap = QtGui.QPixmap(background_file)
@@ -43,12 +51,12 @@ class PripView:
         self._axis_ref_items = {}
         self._axis_line_items = {}
         self._point_items = {}
-
-        self._current_dataset = None
+        self._dataset_items = {}
 
     def model_changed(self):
         self.update_point_items()
         self.update_axis_refs()
+        self.update_list_datasets()
 
     def update_point_items(self):
         model_points = self._model.get_points()
@@ -77,7 +85,8 @@ class PripView:
                 item.setPos(model_pos)
 
     def add_point_item(self, key, pos, dataset):
-        item = PripGraphicsRectItem(PripView.Preferences.Pen_Point, key)
+        pen = PripView.Preferences.Pen_Point[dataset % len(PripView.Preferences.Pen_Point)]
+        item = PripGraphicsRectItem(pen, key)
         self._point_items[key] = (item, dataset)
         self._graphicScene.addItem(item)
         item.setPos(pos);
@@ -155,3 +164,48 @@ class PripView:
                 self._axis_line_items[PripView.Helpers.LineY] = item
             else:
                 self._axis_line_items[PripView.Helpers.LineY].setLine(line)
+
+    def update_list_datasets(self):
+        model_datasets = self._model.get_datasets()
+        set_model_keys = set(model_datasets.keys())
+        set_view_keys = set(self._dataset_items.keys())
+        set_intersect_keys = set_model_keys.intersection(set_view_keys)
+
+        # Added datasets
+        added_keys = set_model_keys - set_intersect_keys
+        for key in added_keys:
+            name = model_datasets[key]
+            self.add_list_item(key, name)
+
+        # Removed datasets
+        removed_keys = set_view_keys - set_intersect_keys
+        for key in removed_keys:
+            self.remove_list_item(key)
+
+        # Potentially changed datasets?
+        #for key in set_intersect_keys:
+            # ??
+
+        #Set current item
+        key = self._model.get_current_dataset()
+        if not key is None:
+            item = self._dataset_items[key]
+            self._listDatasets.setCurrentItem(item)
+
+    def add_list_item(self, key, name):
+        item = PripDatasetItem(key, name);
+        self._dataset_items[key] = item
+        self._listDatasets.addItem(item);
+
+    def remove_list_item(self, key):
+        # TODO: Iterate  through items to find the one with the key
+        def iterAllItems(self):
+            for i in range(self.count()):
+                yield self.item(i)
+
+        for item in iterAllItems(self._listDatasets):
+            if item._key == key:
+                del item
+                break
+
+        del self._dataset_items[key]
