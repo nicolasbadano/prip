@@ -1,7 +1,7 @@
 # Prip
 # class PripGraphicsView
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtGui
 
 class PripGraphicsView(QtGui.QGraphicsView):
 

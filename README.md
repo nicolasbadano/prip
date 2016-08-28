@@ -35,11 +35,11 @@ It is currently tested on Python 2.7.2 and PyQt 4.8.6, but should run on other v
 - Double click on the `PRip.py` file
 
 #### On Ubuntu/Mint/Debian
-If you have a distribution based on KDE you most likely already have what's needed. In any case, this instructions should :
+If you have a distribution based on KDE you most likely already have what's needed. In any case, this instructions should be enough:
 
 - Download the source code
 - `sudo apt-get update && sudo apt-get install python-qt4`
-- On the source code, run `python PRip.py`
+- On the source code folder, run `python PRip.py`
 
 Or, if you want to automatically download and execute the latest code, installing dependencies if needed:
 

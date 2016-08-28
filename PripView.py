@@ -1,13 +1,10 @@
 # Prip
 # class PripView
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtCore, QtGui
 from PripInsertMode import PripInsertMode
 from PripGraphicsRectItem import PripGraphicsRectItem
 from PripGraphicsAxisItem import PripGraphicsAxisItem
 from PripDatasetItem import PripDatasetItem
-
-from vector import *
-import pickle
 
 class PripView:
 

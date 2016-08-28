@@ -1,9 +1,7 @@
 # Prip
 # class PripGraphicsScene
 
-from PyQt4 import QtCore, QtGui, uic
-from vector import *
-import pickle
+from PyQt4 import QtCore, QtGui
 
 class PripGraphicsScene(QtGui.QGraphicsScene):
 

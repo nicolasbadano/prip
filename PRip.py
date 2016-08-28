@@ -4,7 +4,6 @@
 # Main Program
 
 import sys
-import os
 from PyQt4 import QtCore, QtGui, uic
 from functools import partial
 
@@ -13,9 +12,6 @@ from PripView import PripView
 from PripGraphicsScene import PripGraphicsScene
 from PripInsertMode import PripInsertMode
 from PripGraphicsRectItem import PripGraphicsRectItem
-
-import PripGraphicsView
-
 
 # Load the UI
 path = ""

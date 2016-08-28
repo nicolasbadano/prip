@@ -1,10 +1,10 @@
 # Prip
 # class PripModel
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtCore, QtGui
 from PripInsertMode import PripInsertMode
 from collections import OrderedDict
-from vector import *
+from vector import vector_diff, solve_linear_2x2
 import pickle
 from os import path
 

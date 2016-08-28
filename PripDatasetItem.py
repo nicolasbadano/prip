@@ -1,8 +1,7 @@
 # Prip
 # class PripDatasetItem
 
-from PyQt4 import QtCore, QtGui, uic
-import pickle
+from PyQt4 import QtGui
 
 class PripDatasetItem(QtGui.QListWidgetItem):
 
